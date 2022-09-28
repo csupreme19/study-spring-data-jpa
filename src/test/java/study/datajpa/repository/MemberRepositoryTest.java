@@ -82,4 +82,18 @@ class MemberRepositoryTest {
         assertThat(result.size()).isEqualTo(1);
     }
 
+    @Test
+    public void testNamedQuery() {
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+        repository.save(m1);
+        repository.save(m2);
+
+        List<Member> result = repository.findByUsername("AAA");
+
+        assertThat(result).extracting("username").containsExactly("AAA");
+        assertThat(result).extracting("age").containsExactly(10);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
 }
