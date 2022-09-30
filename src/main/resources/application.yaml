@@ -6,11 +6,13 @@ spring:
     driver-class-name: org.h2.Driver
 
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
     properties:
       hibernate:
         format_sql: true
+        highlight_sql: true
 
 logging:
   level:
