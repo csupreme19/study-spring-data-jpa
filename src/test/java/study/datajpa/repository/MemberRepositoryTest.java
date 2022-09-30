@@ -4,6 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -181,5 +185,29 @@ class MemberRepositoryTest {
         assertThat(member.getUsername()).isEqualTo("AAA");
         assertThat(optional.get()).isNotNull();
 
+    }
+
+    @Test
+    public void paging() {
+        repository.save(new Member("member1", 10));
+        repository.save(new Member("member2", 10));
+        repository.save(new Member("member3", 10));
+        repository.save(new Member("member4", 10));
+        repository.save(new Member("member5", 10));
+
+        int age = 10;
+
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        Slice<Member> page = repository.findByAge(age, pageRequest);
+
+        page.map(member -> new MemberDto(member.getId(), member.getUsername(), member.getTeam().getName()));
+
+        assertThat(page.getContent().size()).isEqualTo(3);
+//        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0);
+//        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
     }
 }
