@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -14,6 +13,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Rollback(false)
 class MemberRepositoryTest {
+
+    @PersistenceContext
+    EntityManager em;
 
     @Autowired
     MemberRepository repository;
@@ -222,5 +226,53 @@ class MemberRepositoryTest {
         int resultCount = repository.bulkAgePlus(20);
 
         assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    public void findMemberEntityGraph() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        repository.save(member1);
+        repository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        List<Member> list = repository.findMemberFetchJoin();
+
+        list.forEach(member -> {
+            System.out.println("member=" + member.getUsername());
+            System.out.println("-> member.team.class=" + member.getTeam().getClass());
+            System.out.println("-> member.team.name=" + member.getTeam().getName());
+        });
+    }
+
+    @Test
+    public void findMemberLazy() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        repository.save(member1);
+        repository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        List<Member> list = repository.findAllLazy();
+
+        list.forEach(member -> {
+            System.out.println("member=" + member.getUsername());
+            System.out.println("-> member.team.class=" + member.getTeam().getClass());
+            System.out.println("-> member.team.name=" + member.getTeam().getName());
+        });
     }
 }
