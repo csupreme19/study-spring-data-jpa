@@ -8,6 +8,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Rollback(false)
 class MemberJpaRepositoryTest {
+
+    @PersistenceContext
+    EntityManager em;
 
     @Autowired
     MemberJpaRepository repository;
@@ -118,6 +123,25 @@ class MemberJpaRepositoryTest {
         assertThat(list.size()).isEqualTo(3);
         assertThat(totalCount).isEqualTo(5);
 
+    }
+
+    @Test
+    public void bulkUpdate() {
+        repository.save(new Member("member1", 10));
+        repository.save(new Member("member2", 19));
+        repository.save(new Member("member3", 20));
+        repository.save(new Member("member4", 21));
+        repository.save(new Member("member5", 40));
+
+        int resultCount = repository.bulkAgePlus(20);
+
+        em.flush();
+        em.clear();
+
+        Member member5 = repository.findByUsername("member5").get(0);
+        System.out.println(member5);
+
+        assertThat(resultCount).isEqualTo(3);
     }
 
 }
