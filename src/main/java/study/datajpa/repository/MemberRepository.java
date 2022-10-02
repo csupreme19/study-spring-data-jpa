@@ -40,7 +40,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 
     @Query(value = "select m from Member m join m.team t"
             , countQuery = "select count(m) from Member m where m.age = :age")
-    Page<Member> findAll(Pageable pageable);
+    Page<Member> findPageAll(Pageable pageable);
     Slice<Member> findByAge(int age, Pageable pageable);
 
     @Modifying(clearAutomatically = true)
