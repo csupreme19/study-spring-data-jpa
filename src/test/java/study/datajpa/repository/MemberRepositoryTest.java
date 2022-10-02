@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setRemoveAssertJRelatedElementsFromStackTrace;
 
 @Transactional
 @SpringBootTest
@@ -305,5 +306,10 @@ class MemberRepositoryTest {
 
         // when
         List<Member> result = repository.findLockByUsername("member1");
+    }
+
+    @Test
+    public void callCustom() {
+        List<Member> members = repository.findMemberCustom();
     }
 }
