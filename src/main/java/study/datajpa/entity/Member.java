@@ -2,6 +2,7 @@ package study.datajpa.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = PROTECTED)
 @ToString(exclude = {"team"})
 @NamedQuery(
