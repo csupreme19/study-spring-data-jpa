@@ -362,4 +362,26 @@ class MemberRepositoryTest {
         // then
         assertThat(list).extracting("username").contains("m1");
     }
+
+    @Test
+    public void projections() {
+
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member member1 = new Member("m1", 10, teamA);
+        Member member2 = new Member("m2", 10, teamA);
+        em.persist(member1);
+        em.persist(member2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        List<NestedClosedProjections> m1 = repository.findProjectionsByUsername("m1", NestedClosedProjections.class);
+
+        // then
+        System.out.println(m1.get(0).getUsername());
+    }
 }
