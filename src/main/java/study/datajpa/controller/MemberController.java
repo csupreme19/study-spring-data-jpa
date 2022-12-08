@@ -23,7 +23,7 @@ public class MemberController {
 
     @PostConstruct
     public void init() {
-        for(int i=0; i<100; i++) {
+        for(int i=0; i<10; i++) {
             Member member = new Member("member" + i, 10+i);
             memberRepository.save(member);
         }
